@@ -1,10 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, useWindowDimensions } from 'react-native';
 import { Text, Surface, IconButton, Button, Divider, ActivityIndicator } from 'react-native-paper';
+import RenderHtml from 'react-native-render-html';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNotes } from '@/hooks/useNotes';
 
 export default function NoteDetailScreen() {
+  const { width } = useWindowDimensions();
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { notes, editNote, removeNote, loading, error } = useNotes();
@@ -77,9 +79,41 @@ export default function NoteDetailScreen() {
         {loading ? (
           <ActivityIndicator size="small" color="#007AFF" style={styles.loadingSpinner} />
         ) : (
-          <Text variant="bodyLarge" style={styles.content}>
-            {note.content}
-          </Text>
+          <RenderHtml
+            contentWidth={width}
+            source={{ html: note.content || '<p></p>' }}
+            tagsStyles={{
+              body: {
+                fontSize: 16,
+                color: '#333333',
+                lineHeight: 24,
+              },
+              p: {
+                marginBottom: 10,
+              },
+              h3: {
+                marginTop: 12,
+                marginBottom: 6,
+                fontSize: 18,
+                fontWeight: 'bold',
+              },
+              ul: {
+                paddingLeft: 16,
+                marginTop: 6,
+                marginBottom: 10,
+              },
+              ol: {
+                paddingLeft: 16,
+                marginTop: 6,
+                marginBottom: 10,
+              },
+              li: {
+                fontSize: 16,
+                color: '#333333',
+                marginBottom: 4,
+              }
+            }}
+          />
         )}
 
         <Divider style={styles.divider} />

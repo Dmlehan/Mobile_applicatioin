@@ -65,8 +65,11 @@ export default function DashboardScreen() {
             <Chip
               selected={selectedCategory === item}
               onPress={() => setSelectedCategory(item)}
-              style={styles.chip}
-              selectedColor="#FFFFFF"
+              style={[
+                styles.chip,
+                selectedCategory === item ? styles.selectedChip : styles.unselectedChip
+              ]}
+              selectedColor={selectedCategory === item ? '#FFFFFF' : '#007AFF'}
               showSelectedOverlay
             >
               {item}
@@ -153,7 +156,12 @@ const styles = StyleSheet.create({
   },
   chip: {
     marginRight: 8,
-    backgroundColor: '#E5E5EA',
+  },
+  selectedChip: {
+    backgroundColor: '#007AFF',
+  },
+  unselectedChip: {
+    backgroundColor: '#E8F0FE',
   },
   listContainer: {
     padding: 16,

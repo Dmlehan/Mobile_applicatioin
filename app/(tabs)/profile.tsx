@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Alert, Platform } from 'react-native';
-import { Button, Text, Surface, Avatar, ActivityIndicator } from 'react-native-paper';
+import { StyleSheet, View, Alert, Platform, Switch } from 'react-native';
+import { Button, Text, Surface, Avatar, ActivityIndicator, useTheme } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setUser } from '@/redux/slices/authSlice';
+import { toggleTheme } from '@/redux/slices/themeSlice';
 import { authService } from '@/services/authService';
 import { seedNotesForUser } from '@/utils/seeder';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const theme = useTheme();
   const { user } = useAppSelector((state) => state.auth);
+  const { themeMode } = useAppSelector((state) => state.theme);
 
   const [seeding, setSeeding] = useState(false);
   const [loading, setLoadingState] = useState(false);
+
+  const isDarkMode = themeMode === 'dark';
 
   const handleLogout = async () => {
     setLoadingState(true);
@@ -55,15 +60,25 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Surface style={styles.profileCard} elevation={2}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Surface style={[styles.profileCard, { backgroundColor: theme.colors.elevation.level1 }]} elevation={2}>
         <Avatar.Icon size={80} icon="account" style={styles.avatar} />
-        <Text style={styles.title}>User Profile</Text>
-        <Text style={styles.email}>{user?.email || 'Guest User'}</Text>
+        <Text style={[styles.title, { color: theme.colors.onSurface }]}>User Profile</Text>
+        <Text style={[styles.email, { color: theme.colors.onSurfaceVariant }]}>{user?.email || 'Guest User'}</Text>
+
+        <View style={[styles.themeRow, { borderBottomColor: theme.colors.outlineVariant }]}>
+          <Text style={[styles.themeLabel, { color: theme.colors.onSurface }]}>Dark Mode</Text>
+          <Switch
+            value={isDarkMode}
+            onValueChange={() => { dispatch(toggleTheme()); }}
+            thumbColor={isDarkMode ? theme.colors.primary : '#CCCCCC'}
+            trackColor={{ false: '#767577', true: '#81b0ff' }}
+          />
+        </View>
 
         <View style={styles.buttonContainer}>
           {seeding ? (
-            <ActivityIndicator style={styles.loader} size="small" color="#007AFF" />
+            <ActivityIndicator style={styles.loader} size="small" color={theme.colors.primary} />
           ) : (
             <Button
               mode="contained"
@@ -80,8 +95,8 @@ export default function ProfileScreen() {
             icon="logout"
             onPress={handleLogout}
             loading={loading}
-            style={styles.logoutBtn}
-            textColor="#E53935"
+            style={[styles.logoutBtn, { borderColor: theme.colors.error }]}
+            textColor={theme.colors.error}
           >
             Sign Out
           </Button>
@@ -96,7 +111,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
     padding: 20,
   },
   profileCard: {
@@ -105,7 +119,6 @@ const styles = StyleSheet.create({
     padding: 24,
     borderRadius: 16,
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
   },
   avatar: {
     backgroundColor: '#007AFF',
@@ -114,13 +127,24 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#1A1A1A',
     marginBottom: 4,
   },
   email: {
     fontSize: 16,
-    color: '#666666',
-    marginBottom: 32,
+    marginBottom: 24,
+  },
+  themeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    marginBottom: 24,
+  },
+  themeLabel: {
+    fontSize: 16,
+    fontWeight: '500',
   },
   buttonContainer: {
     width: '100%',
@@ -132,7 +156,6 @@ const styles = StyleSheet.create({
   },
   logoutBtn: {
     borderRadius: 8,
-    borderColor: '#E53935',
   },
   loader: {
     marginVertical: 10,
