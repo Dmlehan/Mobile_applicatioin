@@ -10,7 +10,7 @@ import { auth } from '@/firebase/config';
 import { setUser } from '@/redux/slices/authSlice';
 import { useFonts } from 'expo-font';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { MD3LightTheme, MD3DarkTheme, PaperProvider } from 'react-native-paper';
+import { MD3LightTheme, PaperProvider } from 'react-native-paper';
 
 function RootLayoutNav() {
   const { user, loading } = useAppSelector((state) => state.auth);
@@ -58,39 +58,23 @@ function RootLayoutNav() {
     }
   }, [user, segments, loading, router]);
 
-  // Read theme selection from Redux state
-  const { themeMode } = useAppSelector((state) => state.theme);
-
-  // Custom themes using Material Design 3 guidelines
-  const paperTheme = themeMode === 'dark'
-    ? {
-        ...MD3DarkTheme,
-        colors: {
-          ...MD3DarkTheme.colors,
-          primary: '#007AFF',
-          background: '#121212',
-          surface: '#1E1E1E',
-        }
-      }
-    : {
-        ...MD3LightTheme,
-        colors: {
-          ...MD3LightTheme.colors,
-          primary: '#007AFF',
-          background: '#F8F9FA',
-          surface: '#FFFFFF',
-        }
-      };
-
-  const statusBarStyle = themeMode === 'dark' ? 'light' : 'dark';
-
   if (!fontsLoaded) {
     return null;
   }
 
+  const paperTheme = {
+    ...MD3LightTheme,
+    colors: {
+      ...MD3LightTheme.colors,
+      primary: '#007AFF',
+      background: '#F8F9FA',
+      surface: '#FFFFFF',
+    }
+  };
+
   return (
     <PaperProvider theme={paperTheme}>
-      <StatusBar style={statusBarStyle} />
+      <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
