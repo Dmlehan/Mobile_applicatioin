@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setUser, setLoading, setError } from '@/redux/slices/authSlice';
 import { authService } from '@/services/authService';
 import { isValidEmail } from '@/utils/validation';
+import { getFriendlyErrorMessage } from '@/utils/firebaseErrors';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function LoginScreen() {
       dispatch(setUser(userState));
       router.replace('/(tabs)');
     } catch (err: any) {
-      dispatch(setError(err.message || 'Failed to login. Please check your credentials.'));
+      dispatch(setError(getFriendlyErrorMessage(err)));
     } finally {
       dispatch(setLoading(false));
     }

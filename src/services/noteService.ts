@@ -1,5 +1,5 @@
 import { createDocument, getDocuments, updateDocument, deleteDocument } from '@/firebase/firestore';
-import { where, orderBy, QueryConstraint } from 'firebase/firestore';
+import { where, QueryConstraint } from 'firebase/firestore';
 import { Note } from '@/redux/slices/noteSlice';
 
 const COLLECTION_NAME = 'notes';
@@ -23,9 +23,10 @@ export const noteService = {
   async getNotes(userId: string): Promise<Note[]> {
     const constraints: QueryConstraint[] = [
       where('userId', '==', userId),
-      orderBy('createdAt', 'desc'),
     ];
-    return await getDocuments(COLLECTION_NAME, constraints);
+    const docs = await getDocuments(COLLECTION_NAME, constraints);
+    // Sort client-side by createdAt descending to avoid composite index requirements
+    return docs.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   },
 
   async updateNote(

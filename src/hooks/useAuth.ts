@@ -1,19 +1,12 @@
-// Placeholder custom hook for authentication state and methods
-export function useAuth() {
-  const user = null;
-  const isAuthenticated = false;
-  const loading = false;
+import { useAppSelector } from '@/redux/hooks';
 
-  const login = async () => {};
-  const register = async () => {};
-  const logout = async () => {};
+export function useAuth() {
+  const { user, loading, error } = useAppSelector((state) => state.auth);
 
   return {
     user,
-    isAuthenticated,
+    isAuthenticated: !!user,
     loading,
-    login,
-    register,
-    logout,
+    error,
   };
 }
